@@ -81,11 +81,11 @@ function applyTrendClass(el, currentValue, previousValue, direction) {
 
 function renderLatest(metrics) {
   document.getElementById("latest-cpk").textContent = formatMetric(metrics.latestCostPerKm, 4);
-  document.getElementById("latest-eff").textContent = formatMetric(metrics.latestEfficiencyLPerKm, 4);
+  document.getElementById("latest-eff").textContent = formatMetric(metrics.latestEfficiencyKmPerL, 2);
   document.getElementById("latest-ppl").textContent = formatMetric(metrics.latestPricePerLitre, 4);
 
   applyTrendClass(document.getElementById("tile-cpk"), metrics.latestCostPerKm, metrics.previousCostPerKm, "lower");
-  applyTrendClass(document.getElementById("tile-eff"), metrics.latestEfficiencyLPerKm, metrics.previousEfficiencyLPerKm, "higher");
+  applyTrendClass(document.getElementById("tile-eff"), metrics.latestEfficiencyKmPerL, metrics.previousEfficiencyKmPerL, "higher");
   applyTrendClass(document.getElementById("tile-ppl"), metrics.latestPricePerLitre, metrics.previousPricePerLitre, "lower");
 }
 
@@ -121,8 +121,8 @@ function renderHistory(entries) {
 
     var effSpan = document.createElement("span");
     effSpan.className = "entry-metric";
-    effSpan.textContent = "Eff: " + formatMetric(entry.efficiencyLPerKm, 4) + " L/km";
-    applyTrendClass(effSpan, entry.efficiencyLPerKm, previousEntry ? previousEntry.efficiencyLPerKm : null, "higher");
+    effSpan.textContent = "Eff: " + formatMetric(entry.efficiencyKmPerL, 2) + " km/L";
+    applyTrendClass(effSpan, entry.efficiencyKmPerL, previousEntry ? previousEntry.efficiencyKmPerL : null, "higher");
 
     var pplSpan = document.createElement("span");
     pplSpan.className = "entry-metric";
@@ -161,7 +161,7 @@ function loadData() {
 // ── PWA ───────────────────────────────────────────────────────────────────
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js").catch(function () {
+    navigator.serviceWorker.register("./sw.js?v=20260404-2").catch(function () {
       // Keep app functional even if service worker registration fails.
     });
   }

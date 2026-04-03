@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Fuel Cost per KM</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Fuel Cost per KM</h1>
+  </header>
+
+  <main>
+    <section id="metric-card">
+      <span class="metric-label">Latest Cost per KM</span>
+      <span id="latest-cpk" class="metric-value">--</span>
+      <span class="metric-unit">$/km</span>
+    </section>
+
+    <button id="add-btn" type="button">Add Entry</button>
+
+    <section id="history-section">
+      <h2>Recent History</h2>
+      <ul id="history-list">
+        <li class="loading">Loading…</li>
+      </ul>
+    </section>
+  </main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <h2 id="modal-title">New Entry</h2>
+      <form id="entry-form" novalidate>
+
+        <div class="field">
+          <label for="field-date">Date</label>
+          <input type="date" id="field-date" name="date" required />
+        </div>
+
+        <div class="field">
+          <label for="field-fuel-cost">Fuel Cost ($)</label>
+          <input type="text" id="field-fuel-cost" name="fuelCost"
+            placeholder="e.g. 74 or 80-2.50" required
+            inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        </div>
+
+        <div class="field">
+          <label for="field-odometer">Odometer (km)</label>
+          <input type="number" id="field-odometer" name="odometer"
+            placeholder="e.g. 45230" required min="0" />
+        </div>
+
+        <div class="field">
+          <label for="field-litres">Litres Filled</label>
+          <input type="number" id="field-litres" name="litresFilled"
+            placeholder="e.g. 38.5" required min="0.1" max="50" step="0.1" />
+        </div>
+
+        <div id="form-error" class="form-error hidden" role="alert"></div>
+
+        <div class="form-actions">
+          <button type="submit" id="submit-btn">Save</button>
+          <button type="button" id="cancel-btn">Cancel</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

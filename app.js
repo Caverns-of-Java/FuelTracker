@@ -38,13 +38,55 @@ function clearError() {
 }
 
 // ── Render functions ───────────────────────────────────────────────────────
-function renderLatest(costPerKm) {
-  var el = document.getElementById("latest-cpk");
-  if (costPerKm !== null && costPerKm !== undefined && costPerKm !== "") {
-    el.textContent = Number(costPerKm).toFixed(4);
-  } else {
-    el.textContent = "--";
+function formatMetric(value, decimals) {
+  if (value === null || value === undefined || value === "" || isNaN(value)) {
+    return "--";
   }
+  return Number(value).toFixed(decimals);
+}
+
+function toFiniteNumber(value) {
+  if (value === null || value === undefined || value === "" || isNaN(value)) {
+    return null;
+  }
+  var parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getTrend(currentValue, previousValue, direction) {
+  var current = toFiniteNumber(currentValue);
+  var previous = toFiniteNumber(previousValue);
+  if (current === null || previous === null) return "neutral";
+
+  if (current === previous) return "neutral";
+
+  if (direction === "lower") {
+    return current < previous ? "improved" : "worsened";
+  }
+
+  return current > previous ? "improved" : "worsened";
+}
+
+function applyTrendClass(el, currentValue, previousValue, direction) {
+  if (!el) return;
+  el.classList.remove("metric-improved", "metric-worsened");
+
+  var trend = getTrend(currentValue, previousValue, direction);
+  if (trend === "improved") {
+    el.classList.add("metric-improved");
+  } else if (trend === "worsened") {
+    el.classList.add("metric-worsened");
+  }
+}
+
+function renderLatest(metrics) {
+  document.getElementById("latest-cpk").textContent = formatMetric(metrics.latestCostPerKm, 4);
+  document.getElementById("latest-eff").textContent = formatMetric(metrics.latestEfficiencyLPerKm, 4);
+  document.getElementById("latest-ppl").textContent = formatMetric(metrics.latestPricePerLitre, 4);
+
+  applyTrendClass(document.getElementById("tile-cpk"), metrics.latestCostPerKm, metrics.previousCostPerKm, "lower");
+  applyTrendClass(document.getElementById("tile-eff"), metrics.latestEfficiencyLPerKm, metrics.previousEfficiencyLPerKm, "higher");
+  applyTrendClass(document.getElementById("tile-ppl"), metrics.latestPricePerLitre, metrics.previousPricePerLitre, "lower");
 }
 
 function renderHistory(entries) {
@@ -59,22 +101,39 @@ function renderHistory(entries) {
     return;
   }
 
-  entries.forEach(function (entry) {
+  entries.forEach(function (entry, index) {
+    var previousEntry = entries[index + 1];
+
     var li = document.createElement("li");
+    li.className = "history-item";
 
     var dateSpan = document.createElement("span");
     dateSpan.className = "entry-date";
     dateSpan.textContent = entry.date;
 
+    var valuesWrap = document.createElement("div");
+    valuesWrap.className = "entry-metrics";
+
     var cpkSpan = document.createElement("span");
-    cpkSpan.className = "entry-cpk";
-    cpkSpan.textContent =
-      entry.costPerKm !== null && entry.costPerKm !== "" && !isNaN(entry.costPerKm)
-        ? Number(entry.costPerKm).toFixed(4) + " $/km"
-        : "—";
+    cpkSpan.className = "entry-metric";
+    cpkSpan.textContent = "CPK: " + formatMetric(entry.costPerKm, 4) + " $/km";
+    applyTrendClass(cpkSpan, entry.costPerKm, previousEntry ? previousEntry.costPerKm : null, "lower");
+
+    var effSpan = document.createElement("span");
+    effSpan.className = "entry-metric";
+    effSpan.textContent = "Eff: " + formatMetric(entry.efficiencyLPerKm, 4) + " L/km";
+    applyTrendClass(effSpan, entry.efficiencyLPerKm, previousEntry ? previousEntry.efficiencyLPerKm : null, "higher");
+
+    var pplSpan = document.createElement("span");
+    pplSpan.className = "entry-metric";
+    pplSpan.textContent = "PPL: " + formatMetric(entry.pricePerLitre, 4) + " $/L";
+    applyTrendClass(pplSpan, entry.pricePerLitre, previousEntry ? previousEntry.pricePerLitre : null, "lower");
 
     li.appendChild(dateSpan);
-    li.appendChild(cpkSpan);
+    valuesWrap.appendChild(cpkSpan);
+    valuesWrap.appendChild(effSpan);
+    valuesWrap.appendChild(pplSpan);
+    li.appendChild(valuesWrap);
     list.appendChild(li);
   });
 }
@@ -87,13 +146,15 @@ function loadData() {
       return res.json();
     })
     .then(function (data) {
-      renderLatest(data.latestCostPerKm);
+      renderLatest(data);
       renderHistory(data.history);
     })
     .catch(function () {
       var list = document.getElementById("history-list");
       list.innerHTML = '<li class="no-data">Failed to load data. Check your API URL or network.</li>';
       document.getElementById("latest-cpk").textContent = "--";
+      document.getElementById("latest-eff").textContent = "--";
+      document.getElementById("latest-ppl").textContent = "--";
     });
 }
 

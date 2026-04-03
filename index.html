@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#b27a62" />
   <title>Fuel Cost per KM</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
@@ -16,9 +16,24 @@
 
   <main>
     <section id="metric-card">
-      <span class="metric-label">Latest Cost per KM</span>
-      <span id="latest-cpk" class="metric-value">--</span>
-      <span class="metric-unit">$/km</span>
+      <h2 class="metric-card-title">Latest Metrics</h2>
+      <div class="metric-grid">
+        <div id="tile-cpk" class="metric-tile">
+          <span class="metric-label">Cost per KM</span>
+          <span id="latest-cpk" class="metric-value">--</span>
+          <span class="metric-unit">$/km</span>
+        </div>
+        <div id="tile-eff" class="metric-tile">
+          <span class="metric-label">Efficiency</span>
+          <span id="latest-eff" class="metric-value">--</span>
+          <span class="metric-unit">L/km</span>
+        </div>
+        <div id="tile-ppl" class="metric-tile">
+          <span class="metric-label">Price per L</span>
+          <span id="latest-ppl" class="metric-value">--</span>
+          <span class="metric-unit">$/L</span>
+        </div>
+      </div>
     </section>
 
     <button id="add-btn" type="button">Add Entry</button>

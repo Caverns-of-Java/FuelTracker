@@ -183,7 +183,7 @@ function handleSubmit(event) {
     .then(function (data) {
       if (data.status !== "ok") throw new Error("Unexpected server response.");
       closeModal();
-      loadData();
+      window.location.reload();
     })
     .catch(function (err) {
       showError("Failed to save: " + err.message);
